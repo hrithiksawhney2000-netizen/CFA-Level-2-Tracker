@@ -178,12 +178,15 @@ svg.chk path{fill:none;stroke:white;stroke-width:2.5;stroke-linecap:round;stroke
     <div class="tb-title">CFA Level II · 2026</div>
     <div class="tb-sub">Exam: 19 Nov 2026 · Fri–Sat main · Mon–Thu 1.5h</div>
   </div>
-  <div class="tb-right">
-    <div class="cd-num" id="cd">—</div>
+  <div class="tb-right" style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+    <div style="display:flex;align-items:center;gap:6px">
+      <div id="sync-dot" style="width:7px;height:7px;border-radius:50%;background:var(--text-3);flex-shrink:0;transition:background .4s" title="Sync status"></div>
+      <div class="cd-num" id="cd">—</div>
+    </div>
     <div class="cd-lbl">days left</div>
   </div>
 </div>
-<div class="content">
+<div class="content"><div id="sync-status" style="text-align:center;font-size:11px;color:var(--amber);padding:6px 0 0;min-height:4px"></div>
   <div class="page on" id="page-home">
     <div class="motiv" id="motiv-box"></div>
     <div class="stats-grid" id="home-stats"></div>
@@ -470,11 +473,105 @@ const SCHEDULE=[
 {id:'d113',date:'2026-11-19',dayLabel:'Thu',title:'CFA LEVEL II EXAM — 19 November 2026',sub:'You have done the work. Stay calm. Read each vignette twice before the questions. Trust yourself.',type:'mock',time:'EXAM DAY',wknd:true},
 ];
 
+// ── SUPABASE CONFIG ───────────────────────────────────────────────────────────
+const SB_URL='https://jxnobvespocvfeffoldq.supabase.co';
+const SB_KEY='sb_publishable_1QDXw8iruqs8cgyxX54sEQ__aQgPO0J';
+const USER_ID='hrithik_cfa_2026';
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let prog=JSON.parse(localStorage.getItem('cfa26_rdg')||'{}');
-let dayProg=JSON.parse(localStorage.getItem('cfa26_day')||'{}');
-let taskProg=JSON.parse(localStorage.getItem('cfa26_task')||'{}');
-function save(){localStorage.setItem('cfa26_rdg',JSON.stringify(prog));localStorage.setItem('cfa26_day',JSON.stringify(dayProg));localStorage.setItem('cfa26_task',JSON.stringify(taskProg));}
+let prog={};
+let dayProg={};
+let taskProg={};
+let syncTimer=null;
+
+// Show a small sync indicator in topbar
+function showSync(status){
+  let el=document.getElementById('sync-dot');
+  if(!el)return;
+  if(status==='saving'){el.style.background='var(--amber)';el.title='Saving...';}
+  else if(status==='saved'){el.style.background='var(--green)';el.title='Saved to cloud';}
+  else if(status==='error'){el.style.background='var(--red)';el.title='Sync error — saved locally';}
+}
+
+// Save to Supabase (debounced 800ms so rapid ticks don't spam)
+function save(){
+  // Always save locally as backup
+  localStorage.setItem('cfa26_rdg',JSON.stringify(prog));
+  localStorage.setItem('cfa26_day',JSON.stringify(dayProg));
+  localStorage.setItem('cfa26_task',JSON.stringify(taskProg));
+  // Debounce cloud save
+  if(syncTimer)clearTimeout(syncTimer);
+  showSync('saving');
+  syncTimer=setTimeout(()=>saveToCloud(),800);
+}
+
+async function saveToCloud(){
+  try{
+    const body=JSON.stringify({
+      user_id:USER_ID,
+      readings_done:prog,
+      days_done:dayProg,
+      tasks_done:taskProg,
+      updated_at:new Date().toISOString()
+    });
+    const res=await fetch(`${SB_URL}/rest/v1/cfa_progress`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'apikey':SB_KEY,
+        'Authorization':'Bearer '+SB_KEY,
+        'Prefer':'resolution=merge-duplicates'
+      },
+      body
+    });
+    if(res.ok){showSync('saved');}
+    else{console.error('Supabase error',res.status);showSync('error');}
+  }catch(e){console.error('Sync failed',e);showSync('error');}
+}
+
+async function loadFromCloud(){
+  // Show loading state
+  document.getElementById('sync-status').textContent='Syncing your progress...';
+  try{
+    const res=await fetch(`${SB_URL}/rest/v1/cfa_progress?user_id=eq.${USER_ID}&select=*`,{
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+    });
+    if(res.ok){
+      const data=await res.json();
+      if(data&&data.length>0){
+        const row=data[0];
+        prog=row.readings_done||{};
+        dayProg=row.days_done||{};
+        taskProg=row.tasks_done||{};
+        // Also update localStorage backup
+        localStorage.setItem('cfa26_rdg',JSON.stringify(prog));
+        localStorage.setItem('cfa26_day',JSON.stringify(dayProg));
+        localStorage.setItem('cfa26_task',JSON.stringify(taskProg));
+        document.getElementById('sync-status').textContent='';
+        showSync('saved');
+      } else {
+        // No cloud data yet — try local backup
+        prog=JSON.parse(localStorage.getItem('cfa26_rdg')||'{}');
+        dayProg=JSON.parse(localStorage.getItem('cfa26_day')||'{}');
+        taskProg=JSON.parse(localStorage.getItem('cfa26_task')||'{}');
+        document.getElementById('sync-status').textContent='';
+        showSync('saved');
+      }
+    } else {
+      throw new Error('Bad response '+res.status);
+    }
+  }catch(e){
+    console.error('Load failed',e);
+    // Fallback to localStorage
+    prog=JSON.parse(localStorage.getItem('cfa26_rdg')||'{}');
+    dayProg=JSON.parse(localStorage.getItem('cfa26_day')||'{}');
+    taskProg=JSON.parse(localStorage.getItem('cfa26_task')||'{}');
+    document.getElementById('sync-status').textContent='Offline — using local data';
+    showSync('error');
+  }
+  // Render everything after data is loaded
+  renderStats();renderToday();renderSubjects();renderSchedule();
+}
 
 function daysLeft(){return Math.max(0,Math.ceil((EXAM-new Date())/86400000));}
 function totalR(){return SUBJECTS.reduce((s,sub)=>s+sub.readings.length,0);}
@@ -763,7 +860,7 @@ function showPage(id,btn){
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────────────
-renderMotiv();renderStats();renderToday();renderSubjects();renderSchedule();
+renderMotiv();loadFromCloud();
 </script>
 </body>
 </html>
