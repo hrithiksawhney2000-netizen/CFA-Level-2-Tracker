@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CFA L2 2026">
+<meta name="theme-color" content="#0A1628">
+<title>CFA Level II 2026 — Study Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --gold:#C9A84C;--gold-l:#F0D080;--gold-d:#7A5C10;
+  --navy:#0A1628;--navy-m:#111E35;--navy-l:#192A45;
+  --text:#E8EDF5;--text-2:#9AADC4;--text-3:#556070;
+  --green:#3DBE7A;--green-bg:rgba(61,190,122,.12);
+  --red:#E05555;--red-bg:rgba(224,85,85,.12);
+  --blue:#4A90D9;--blue-bg:rgba(74,144,217,.12);
+  --amber:#E0A84A;--amber-bg:rgba(224,168,74,.12);
+  --purple:#9B7BE0;--purple-bg:rgba(155,123,224,.12);
+  --teal:#2BBFB0;--teal-bg:rgba(43,191,176,.12);
+  --border:rgba(201,168,76,.15);--border2:rgba(255,255,255,.06);
+  --card:#111E35;--card2:#162030;
+  --r:14px;--r2:9px;
+}
+html{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',sans-serif;background:var(--navy);color:var(--text);min-height:100%;font-size:15px;line-height:1.5;overflow-x:hidden}
+.app{max-width:500px;margin:0 auto;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--navy-m);border-bottom:1px solid var(--border);padding:14px 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200}
+.tb-left .tb-title{font-size:17px;font-weight:700;color:var(--gold);letter-spacing:-.3px}
+.tb-left .tb-sub{font-size:11px;color:var(--text-2);margin-top:1px}
+.tb-right{text-align:right}
+.cd-num{font-size:26px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-1px}
+.cd-lbl{font-size:10px;color:var(--text-3);margin-top:1px}
+.content{flex:1;padding:16px 14px 90px}
+.bottomnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:500px;background:var(--navy-m);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom,0)}
+.bn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;cursor:pointer;color:var(--text-3);font-size:10px;gap:3px;border:none;background:transparent;transition:color .2s}
+.bn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.bn.on{color:var(--gold)}
+.page{display:none}.page.on{display:block}
+
+/* MOTIVATION */
+.motiv{background:var(--navy-l);border:1px solid var(--gold);border-radius:var(--r);padding:16px;margin-bottom:14px;position:relative;overflow:hidden}
+.motiv::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold-d),var(--gold),var(--gold-l),var(--gold),var(--gold-d))}
+.motiv-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.motiv-tag{font-size:10px;font-weight:700;color:var(--gold);letter-spacing:.8px;text-transform:uppercase}
+.motiv-btn{background:rgba(201,168,76,.15);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:10px;font-weight:700;color:var(--gold);cursor:pointer;white-space:nowrap;letter-spacing:.3px;transition:background .2s}
+.motiv-btn:active{background:rgba(201,168,76,.3)}
+.motiv-q{font-size:14px;color:var(--text);line-height:1.65;font-style:italic;margin-bottom:8px}
+.motiv-sub{font-size:12px;color:var(--text-2);font-weight:500}
+.motiv-day{font-size:11px;color:var(--text-3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border2)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:12px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:13px 14px}
+.stat-v{font-size:26px;font-weight:800;color:var(--gold);line-height:1;letter-spacing:-1px}
+.stat-l{font-size:11px;color:var(--text-2);margin-top:4px}
+.main-bar-wrap{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden;margin-bottom:16px}
+.main-bar{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--gold-d),var(--gold));transition:width .6s}
+
+/* TODAY */
+.section-label{font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.6px;margin:0 0 8px}
+.today-box{background:var(--card);border:1px solid var(--gold);border-radius:var(--r);overflow:hidden;margin-bottom:14px}
+.today-hdr{background:var(--gold);padding:8px 14px;display:flex;align-items:center;justify-content:space-between}
+.today-hdr-l{font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.6px}
+.today-hdr-r{font-size:11px;color:var(--navy-m);font-weight:600}
+.today-body{padding:14px}
+.today-title{font-size:15px;font-weight:700;margin-bottom:4px;color:var(--text)}
+.today-meta{font-size:12px;color:var(--text-2);margin-bottom:12px}
+.today-tasks{display:flex;flex-direction:column;gap:2px}
+.t-task{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r2);cursor:pointer;transition:background .15s;background:rgba(255,255,255,.03)}
+.t-task:active{background:rgba(255,255,255,.06)}
+.t-task.done .t-lbl{text-decoration:line-through;color:var(--text-3)}
+.t-chk{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--text-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s}
+.t-task.done .t-chk{background:var(--green);border-color:var(--green)}
+.t-lbl{font-size:13px;flex:1;line-height:1.4}
+.t-badge{font-size:10px;padding:2px 8px;border-radius:8px;white-space:nowrap;flex-shrink:0}
+.tb-study{background:var(--blue-bg);color:var(--blue)}
+.tb-q{background:var(--amber-bg);color:var(--amber)}
+.tb-rev{background:var(--green-bg);color:var(--green)}
+.tb-mock{background:var(--red-bg);color:var(--red)}
+.off-notice{background:var(--card2);border:1px solid var(--border2);border-radius:var(--r);padding:20px;text-align:center;margin-bottom:14px}
+.off-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.off-sub{font-size:12px;color:var(--text-2)}
+
+/* SUBJECTS */
+.subj-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.subj-hdr{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.subj-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.subj-info{flex:1;min-width:0}
+.subj-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.subj-meta{font-size:11px;color:var(--text-2);margin-top:2px}
+.subj-pct{font-size:13px;font-weight:700;color:var(--gold);flex-shrink:0}
+.chev{font-size:11px;color:var(--text-3);transition:transform .25s;flex-shrink:0}
+.subj-card.open .chev{transform:rotate(180deg)}
+.pbar-wrap{height:4px;background:rgba(255,255,255,.07);border-radius:2px;overflow:hidden;margin-top:5px}
+.pbar{height:100%;border-radius:2px;transition:width .5s}
+.readings-list{display:none;border-top:1px solid var(--border2)}
+.subj-card.open .readings-list{display:block}
+.r-row{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;border-bottom:1px solid var(--border2);cursor:pointer;-webkit-user-select:none;user-select:none;transition:background .15s}
+.r-row:last-child{border-bottom:none}
+.r-row:active{background:rgba(255,255,255,.03)}
+.r-row.done .r-label{text-decoration:line-through;color:var(--text-3)}
+.r-chk{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--text-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .2s}
+.r-row.done .r-chk{background:var(--green);border-color:var(--green)}
+.r-info{flex:1;min-width:0}
+.r-label{font-size:13px;line-height:1.4}
+.r-qs{font-size:11px;color:var(--text-2);margin-top:3px}
+.r-done-tag{font-size:10px;padding:2px 8px;border-radius:8px;background:var(--green-bg);color:var(--green);flex-shrink:0;white-space:nowrap;margin-top:1px}
+
+/* SCHEDULE */
+.phase-wrap{margin-bottom:12px}
+.phase-title-bar{background:var(--navy-l);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:8px;cursor:pointer;-webkit-user-select:none;user-select:none}
+.phase-wrap.open .phase-title-bar{border-radius:var(--r) var(--r) 0 0}
+.pt-name{font-size:13px;font-weight:700;flex:1}
+.pt-dates{font-size:11px;color:var(--text-2)}
+.phase-body{display:none;background:var(--card);border:1px solid var(--border);border-top:none;border-radius:0 0 var(--r) var(--r)}
+.phase-wrap.open .phase-body{display:block}
+.week-label{padding:8px 14px;font-size:10px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;background:rgba(0,0,0,.2);border-bottom:1px solid var(--border2)}
+.day-row{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border-top:1px solid var(--border2);cursor:pointer;-webkit-user-select:none;user-select:none;transition:background .15s}
+.day-row:active{background:rgba(255,255,255,.03)}
+.day-row.done .dr-title{text-decoration:line-through;color:var(--text-3)}
+.dr-chk{width:16px;height:16px;border-radius:3px;border:1.5px solid var(--text-3);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all .2s}
+.day-row.done .dr-chk{background:var(--green);border-color:var(--green)}
+.dr-day{font-size:10px;font-weight:700;color:var(--text-3);width:30px;flex-shrink:0;margin-top:2px}
+.dr-day.wknd{color:var(--gold)}
+.dr-info{flex:1;min-width:0}
+.dr-title{font-size:13px;line-height:1.4}
+.dr-sub{font-size:11px;color:var(--text-2);margin-top:3px}
+.dr-time{font-size:10px;margin-top:3px;display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:6px}
+.dt-wkday{background:var(--blue-bg);color:var(--blue)}
+.dt-wknd{background:var(--amber-bg);color:var(--amber)}
+.dt-mock{background:var(--red-bg);color:var(--red)}
+.dt-off{background:rgba(255,255,255,.05);color:var(--text-3)}
+
+/* CHARTS */
+.chart-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);margin-bottom:14px;overflow:hidden}
+.chart-hdr{padding:13px 14px 0;font-size:13px;font-weight:700;color:var(--text-2);text-transform:uppercase;letter-spacing:.4px}
+.chart-body{padding:14px}
+canvas{display:block;width:100%!important}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-2)}
+.leg-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.phase-progress-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.pp-label{font-size:12px;color:var(--text-2);width:80px;flex-shrink:0}
+.pp-bar-wrap{flex:1;height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden}
+.pp-bar{height:100%;border-radius:4px;transition:width .5s}
+.pp-pct{font-size:12px;color:var(--gold);font-weight:700;width:36px;text-align:right}
+
+/* INSIGHTS */
+.insight-section{margin-top:4px}
+.insight-group-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px;padding:0 2px}
+.insight-group-label.lbl-warn{color:var(--amber)}
+.insight-group-label.lbl-good{color:var(--green)}
+.insight-group-label.lbl-info{color:var(--blue)}
+.insight-group-label.lbl-action{color:var(--red)}
+.insight{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;background:var(--card2);border-radius:var(--r2);border:1px solid var(--border2);font-size:12px;color:var(--text-2);line-height:1.55;margin-bottom:6px}
+.insight.ins-warn{border-color:rgba(224,168,74,.2);background:rgba(224,168,74,.05)}
+.insight.ins-good{border-color:rgba(61,190,122,.2);background:rgba(61,190,122,.05)}
+.insight.ins-info{border-color:rgba(74,144,217,.2);background:rgba(74,144,217,.05)}
+.insight.ins-action{border-color:rgba(224,85,85,.2);background:rgba(224,85,85,.05)}
+.i-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;margin-top:-1px}
+.i-good{background:var(--green-bg);color:var(--green)}
+.i-warn{background:var(--amber-bg);color:var(--amber)}
+.i-info{background:var(--blue-bg);color:var(--blue)}
+.i-action{background:var(--red-bg);color:var(--red)}
+.insight strong{color:var(--text);font-weight:600}
+.insight-empty{text-align:center;padding:24px 16px;color:var(--text-3);font-size:13px}
+
+svg.chk path{fill:none;stroke:white;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-title">CFA Level II · 2026</div>
+    <div class="tb-sub">Exam: 19 Nov 2026 · Fri–Sat main · Mon–Thu 1.5h</div>
+  </div>
+  <div class="tb-right">
+    <div class="cd-num" id="cd">—</div>
+    <div class="cd-lbl">days left</div>
+  </div>
+</div>
+<div class="content">
+  <div class="page on" id="page-home">
+    <div class="motiv" id="motiv-box"></div>
+    <div class="stats-grid" id="home-stats"></div>
+    <div class="main-bar-wrap"><div class="main-bar" id="main-bar" style="width:0%"></div></div>
+    <div class="section-label">Today's study block</div>
+    <div id="today-section"></div>
+  </div>
+  <div class="page" id="page-subjects"><div id="subj-list"></div></div>
+  <div class="page" id="page-schedule">
+    <div class="motiv" style="background:var(--card2);border-color:var(--border);margin-bottom:14px">
+      <div class="motiv-top"><div class="motiv-tag">Study schedule guide</div></div>
+      <div class="motiv-q" style="font-style:normal;font-size:13px;line-height:1.7">
+        <strong style="color:var(--gold)">Fri &amp; Sat (main engine):</strong> 4–5 hrs — deep reading + full question sets<br>
+        <strong style="color:var(--amber)">Sun:</strong> 2–3 hrs — consolidation, review, catch-up<br>
+        <strong style="color:var(--blue)">Mon–Thu:</strong> 1.5 hrs after work — one focused task only
+      </div>
+      <div class="motiv-day">Tick each day only when you have truly completed the session</div>
+    </div>
+    <div id="sched-wrap"></div>
+  </div>
+  <div class="page" id="page-charts"><div id="charts-wrap"></div></div>
+</div>
+<nav class="bottomnav">
+  <button class="bn on" onclick="showPage('home',this)"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Home</button>
+  <button class="bn" onclick="showPage('subjects',this)"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Subjects</button>
+  <button class="bn" onclick="showPage('schedule',this)"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Schedule</button>
+  <button class="bn" onclick="showPage('charts',this)"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Progress</button>
+</nav>
+</div>
+
+<script>
+const EXAM = new Date('2026-11-19T09:00:00');
+
+// ── MOTIVATIONS (CFA-focused, career & future) ────────────────────────────────
+const MOTIVATIONS = [
+  {q:"The CFA charter is held by fewer than 200,000 people worldwide. You are working toward something genuinely rare.",sub:"Every session closes the gap between where you are and where you want to be."},
+  {q:"CFA charterholders earn significantly more over their careers. This weekend's 4 hours is the highest-ROI investment you will ever make.",sub:"Friday and Saturday are your competitive edge. Use them fully."},
+  {q:"Portfolio managers, research analysts, chief investment officers — the CFA charter is the credential they all share. You're building your ticket into that room.",sub:"The room is waiting. Keep working."},
+  {q:"The DDM, FCFF, binomial tree, pension accounting — these aren't just exam topics. These are the tools you will use every single day in your career as a charterholder.",sub:"You're not memorising formulas. You're building professional fluency."},
+  {q:"Friday evening while others switch off, you open the books. That discipline is exactly the discipline the finance industry rewards.",sub:"Your competition is resting. You are not."},
+  {q:"A CFA charterholder commands respect in every meeting, every pitch, every conversation. The three letters change how the industry sees you — permanently.",sub:"Three letters. A career's worth of doors opened."},
+  {q:"Imagine sitting across from a client in two years, knowing your analysis is backed by the most rigorous investment credential in the world. That's what you're building toward.",sub:"The charter is the foundation. This weekend's session is a brick."},
+  {q:"Saturday is your engine. The candidates who pass Level II are the ones who treat Saturday like a professional training day — not a day off.",sub:"4–5 hours today. That's how champions are made."},
+  {q:"The CFA pass rate for Level II is around 45%. The difference between the candidates who pass and those who don't isn't intelligence — it's showing up on the hard days.",sub:"Today is one of the hard days. Show up."},
+  {q:"Think about the version of yourself that holds the CFA charter. Higher salary. Better opportunities. Global recognition. Unshakeable credibility. That person exists because of the work you do right now.",sub:"Be the person future-you will thank."},
+  {q:"Every reading you complete is permanent. The knowledge compounds. The credential compounds. The career opportunity compounds.",sub:"Compounding works in study too. Every tick matters."},
+  {q:"The CFA curriculum teaches you to think like the most sophisticated investors in the world. You're not just preparing for an exam — you're developing a professional worldview.",sub:"This is bigger than passing. You're becoming someone different."},
+  {q:"Equity valuation, fixed income risk, derivatives, portfolio construction — after November 19th, these will be your language, not just your exam topics.",sub:"Fluency comes from repetition. Keep going."},
+  {q:"Most people talk about wanting a career in finance. A small number sit the CFA. An even smaller number pass Level II. You are building yourself into that smaller number.",sub:"Rare things require rare effort. You have it in you."},
+  {q:"The long-term reward of the CFA charter — in salary, in credibility, in career trajectory — is measured in decades. The short-term cost is measured in months of focused work.",sub:"The maths are overwhelmingly in your favour. Keep going."},
+  {q:"Imagine walking into your next performance review, or your next job interview, and having CFA Level II passed on your CV. The door opens differently.",sub:"That moment is closer than it feels right now."},
+  {q:"When you complete the CFA program, you join an elite global community of investment professionals. The network alone is worth the effort.",sub:"The charter is a permanent passport into the world's best investment rooms."},
+  {q:"After November 19th, you will either wish you had worked harder during these sessions — or you will be celebrating. The outcome is decided right here, right now.",sub:"This session. This tick. This is where the result is built."},
+  {q:"The FI binomial tree feels impossible until it clicks. The pension accounting feels overwhelming until it doesn't. Every difficult topic has a breaking point — you just have to reach it.",sub:"Push past the difficulty. The click is coming."},
+  {q:"Mock exams are the closest thing to the real exam experience. Every mock you do under timed conditions trains your brain to perform when it matters most.",sub:"Treat every mock like November 19th. Your score will thank you."},
+];
+
+let motivIdx = new Date().getDate() % MOTIVATIONS.length;
+
+const COLORS={equity:'#4A90D9',fi:'#C9A84C',fsa:'#3DBE7A',deriv:'#E0904A',pm:'#9B7BE0',quant:'#E05555',econ:'#2BBFB0',corp:'#E74C3C',alts:'#3498DB',ethics:'#F39C12'};
+
+const SUBJECTS=[
+  {id:'equity',name:'Equity Investments',weight:'10–15%',phase:1,readings:[
+    {id:'eq1',label:'Overview of equity securities & markets',eoc:16,am:5},
+    {id:'eq2',label:'Industry & competitive analysis',eoc:18,am:6},
+    {id:'eq3',label:'Discounted dividend valuation (DDM)',eoc:28,am:9},
+    {id:'eq4',label:'Free cash flow valuation (FCFF & FCFE)',eoc:30,am:10},
+    {id:'eq5',label:'Market-based valuation: price multiples',eoc:26,am:8},
+    {id:'eq6',label:'Residual income valuation',eoc:24,am:8},
+    {id:'eq7',label:'Private company valuation',eoc:20,am:6},
+    {id:'eq_rev',label:'EQUITY REVIEW + timed 18-Q mock',eoc:0,am:18,rev:true},
+  ]},
+  {id:'fi',name:'Fixed Income',weight:'10–15%',phase:1,readings:[
+    {id:'fi1',label:'Term structure & interest rate dynamics',eoc:20,am:6},
+    {id:'fi2',label:'Arbitrage-free valuation & binomial tree',eoc:22,am:7},
+    {id:'fi3',label:'Bonds with embedded options (OAS)',eoc:26,am:8},
+    {id:'fi4',label:'Credit analysis models',eoc:22,am:7},
+    {id:'fi5',label:'Credit default swaps (CDS)',eoc:18,am:6},
+    {id:'fi6',label:'Mortgage-backed securities (MBS, CMO)',eoc:20,am:6},
+    {id:'fi_rev',label:'FIXED INCOME REVIEW + timed 18-Q mock',eoc:0,am:18,rev:true},
+  ]},
+  {id:'fsa',name:'Financial Statement Analysis',weight:'10–15%',phase:1,readings:[
+    {id:'fs1',label:'Intercorporate investments',eoc:22,am:7},
+    {id:'fs2',label:'Employee compensation: pension & share-based',eoc:20,am:6},
+    {id:'fs3',label:'Multinational operations (FX translation)',eoc:22,am:7},
+    {id:'fs4',label:'Analysis of financial institutions',eoc:18,am:6},
+    {id:'fs5',label:'Evaluating quality of financial reports',eoc:16,am:5},
+    {id:'fs6',label:'Integration of FSA techniques',eoc:14,am:4},
+    {id:'fs_rev',label:'FSA REVIEW + timed 18-Q mock',eoc:0,am:18,rev:true},
+  ]},
+  {id:'deriv',name:'Derivatives',weight:'5–10%',phase:2,readings:[
+    {id:'d1',label:'Pricing & valuation of forward commitments',eoc:24,am:8},
+    {id:'d2',label:'Valuation of contingent claims (BSM, Greeks)',eoc:26,am:8},
+    {id:'d3',label:'Derivatives strategies',eoc:18,am:6},
+    {id:'d_rev',label:'DERIVATIVES REVIEW + timed 12-Q mock',eoc:0,am:12,rev:true},
+  ]},
+  {id:'pm',name:'Portfolio Management',weight:'10–15%',phase:2,readings:[
+    {id:'pm1',label:'ETFs: mechanics & applications',eoc:16,am:5},
+    {id:'pm2',label:'Using multifactor models',eoc:20,am:6},
+    {id:'pm3',label:'Measuring & managing market risk (VaR)',eoc:22,am:7},
+    {id:'pm4',label:'Backtesting & simulation',eoc:14,am:4},
+    {id:'pm5',label:'Economics & investment markets',eoc:18,am:6},
+    {id:'pm6',label:'Analysis of active portfolio management',eoc:20,am:6},
+    {id:'pm7',label:'Trading costs & electronic markets',eoc:14,am:4},
+    {id:'pm_rev',label:'PM REVIEW + timed 12-Q mock',eoc:0,am:12,rev:true},
+  ]},
+  {id:'quant',name:'Quantitative Methods',weight:'5–10%',phase:2,readings:[
+    {id:'q1',label:'Multiple regression: basics & assumptions',eoc:20,am:6},
+    {id:'q2',label:'Evaluating regression model fit & results',eoc:18,am:6},
+    {id:'q3',label:'Model misspecification',eoc:15,am:5},
+    {id:'q4',label:'Extensions of multiple regression',eoc:16,am:5},
+    {id:'q5',label:'Time-series analysis',eoc:22,am:7},
+    {id:'q6',label:'Machine learning',eoc:14,am:4},
+    {id:'q7',label:'Big data projects',eoc:12,am:4},
+    {id:'q_rev',label:'QUANT REVIEW + timed 12-Q mock',eoc:0,am:12,rev:true},
+  ]},
+  {id:'econ',name:'Economics',weight:'5–10%',phase:2,readings:[
+    {id:'ec1',label:'Currency exchange rates: equilibrium value',eoc:18,am:6},
+    {id:'ec2',label:'Economic growth (Solow model, TFP)',eoc:16,am:5},
+    {id:'ec3',label:'Economics of regulation',eoc:12,am:4},
+    {id:'ec_rev',label:'ECONOMICS REVIEW + timed 8-Q mock',eoc:0,am:8,rev:true},
+  ]},
+  {id:'corp',name:'Corporate Issuers',weight:'5–10%',phase:2,readings:[
+    {id:'co1',label:'Analysis of dividends & share repurchases',eoc:18,am:6},
+    {id:'co2',label:'ESG considerations in investment analysis',eoc:14,am:4},
+    {id:'co3',label:'Capital allocation',eoc:20,am:6},
+    {id:'co4',label:'Business models',eoc:12,am:4},
+    {id:'co_rev',label:'CORPORATE REVIEW + timed 10-Q mock',eoc:0,am:10,rev:true},
+  ]},
+  {id:'alts',name:'Alternative Investments',weight:'5–10%',phase:2,readings:[
+    {id:'a1',label:'Private real estate investments',eoc:20,am:6},
+    {id:'a2',label:'Publicly traded real estate (REITs)',eoc:18,am:6},
+    {id:'a3',label:'Private equity valuation',eoc:22,am:7},
+    {id:'a4',label:'Commodities & commodity derivatives',eoc:16,am:5},
+    {id:'a_rev',label:'ALTERNATIVES REVIEW + timed 10-Q mock',eoc:0,am:10,rev:true},
+  ]},
+  {id:'ethics',name:'Ethics & Professional Standards',weight:'10–15%',phase:3,readings:[
+    {id:'et1',label:'Code of ethics & standards of professional conduct',eoc:18,am:6},
+    {id:'et2',label:'Guidance for standards I–VII (deep dive)',eoc:24,am:8},
+    {id:'et3',label:'Application: case studies & grey areas',eoc:12,am:4},
+    {id:'et4',label:'Asset manager code of professional conduct',eoc:10,am:3},
+    {id:'et_rev',label:'ETHICS REVIEW + timed 15-Q case mock',eoc:0,am:15,rev:true},
+  ]},
+];
+
+// ── SCHEDULE — Fri/Sat = 4–5h MAIN ENGINE, Sun = 2–3h review, Mon–Thu = 1.5h ──
+// wknd:true = Fri or Sat (main engine); sun:true = Sunday (medium); else weekday
+const SCHEDULE=[
+// ═══ PHASE 1: EQUITY ═══
+{id:'d01',date:'2026-04-10',dayLabel:'Fri',title:'Equity R1 (Part 1): Equity types, markets, ADRs, GDRs — read fully',sub:'Full reading session. Notes on equity risk premium, price vs value distinction.',type:'study',time:'4–5 hrs',wknd:true},
+{id:'d02',date:'2026-04-11',dayLabel:'Sat',title:'Equity R1 (Part 2): Indices, equity risk premium + complete EOC',sub:'Finish R1. Do all 16 EOC + 5 AM-style Qs. Mark R1 done in Subjects tab.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d03',date:'2026-04-12',dayLabel:'Sun',title:'Equity R2: Industry classification, life cycle, Porter\'s 5 forces',sub:'Read R2 fully. Do 18 EOC + 6 AM-style Qs. Mark R2 done.',type:'q',time:'2–3 hrs',sun:true},
+{id:'d04',date:'2026-04-13',dayLabel:'Mon',title:'Equity R3 (Part 1): Gordon Growth Model, g = ROE × retention ratio',sub:'Read first half of R3. Derive GGM from scratch on paper.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d05',date:'2026-04-14',dayLabel:'Tue',title:'Equity R3 (Part 2): H-model, two-stage DDM, PVGO decomposition',sub:'Read second half of R3. Know each multistage model\'s assumptions.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d06',date:'2026-04-15',dayLabel:'Wed',title:'Equity R3 EOC: 10 EOC set A + 10 EOC set B',sub:'Do all DDM question sets. Focus on where formulas trip you up.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d07',date:'2026-04-16',dayLabel:'Thu',title:'Equity R3 AM-style: 9 AM-style Qs. Mark R3 done.',sub:'Timed practice. Mark R3 complete in Subjects tab.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d08',date:'2026-04-17',dayLabel:'Fri',title:'Equity R4 (Part 1 & 2): FCFF vs FCFE — full reading + EOC',sub:'Read R4 fully. NCC, FCInv, WCInv adjustments. 10 EOC set A + 10 EOC set B.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d09',date:'2026-04-18',dayLabel:'Sat',title:'Equity R4 AM-style + R5 (Part 1): FCF AM Qs + Price Multiples start',sub:'Do 10 AM-style Qs for R4. Mark R4 done. Read R5 P/E section. 9 EOC set A.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d10',date:'2026-04-19',dayLabel:'Sun',title:'Equity R5 (Part 2) + EOC: P/B, P/S, EV/EBITDA + all question sets',sub:'Finish R5. 9 EOC set B + 8 AM-style Qs. Mark R5 done.',type:'q',time:'2–3 hrs',sun:true},
+{id:'d11',date:'2026-04-20',dayLabel:'Mon',title:'Equity R6 (Part 1): EVA, RI formula, single-stage RI model',sub:'Read R6 first half. RI = NI − (r × BV). Know the formula cold.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d12',date:'2026-04-21',dayLabel:'Tue',title:'Equity R6 (Part 2): Multistage RI, clean surplus violations',sub:'Finish R6 reading. OCI and FX as clean surplus violations.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d13',date:'2026-04-22',dayLabel:'Wed',title:'Equity R6 EOC: 12 EOC + 8 AM-style Qs. Mark R6 done.',sub:'Full R6 question set.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d14',date:'2026-04-23',dayLabel:'Thu',title:'Equity R7 (Part 1): Private vs public, income approach, normalising',sub:'Read R7 first half. Key adjustments: DLOC, DLOM.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d15',date:'2026-04-24',dayLabel:'Fri',title:'Equity R7 complete + EOC: DLOC, DLOM, VC method + all Qs',sub:'Finish R7 reading. 10 EOC + 6 AM-style Qs. Mark R7 done.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d16',date:'2026-04-25',dayLabel:'Sat',title:'EQUITY FULL REVIEW + timed 18-Q mock item set',sub:'Redo 10 hardest EOC Qs across all readings. Then 18-Q timed mock (35 min strict). Review all wrong. Mark Equity Review done.',type:'mock',time:'4–5 hrs',wknd:true},
+{id:'d17',date:'2026-04-26',dayLabel:'Sun',title:'Equity catch-up / revision: Weakest reading from mock review',sub:'Identify weakest Equity topic from mock. Re-read + 10 targeted Qs.',type:'rev',time:'2–3 hrs',sun:true},
+
+// ═══ PHASE 1: FIXED INCOME ═══
+{id:'d18',date:'2026-04-27',dayLabel:'Mon',title:'FI R1 (Part 1): Spot rates, forward rates, bootstrapping',sub:'Read R1 first half. Build yield curve by hand once.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d19',date:'2026-04-28',dayLabel:'Tue',title:'FI R1 (Part 2): Term structure theories + EOC',sub:'Finish R1. 10 EOC + 6 AM-style Qs. Mark R1 done.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d20',date:'2026-04-29',dayLabel:'Wed',title:'FI R2 (Part 1): Arbitrage-free valuation, binomial tree construction',sub:'Read R2. Build a 2-step binomial tree by hand.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d21',date:'2026-04-30',dayLabel:'Thu',title:'FI R2 (Part 2): Pathwise valuation, OAS vs Z-spread',sub:'Finish R2 reading. OAS = Z-spread − option cost. Very testable.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d22',date:'2026-05-01',dayLabel:'Fri',title:'FI R2 EOC + R3: Binomial tree Qs + Embedded options full read',sub:'11 EOC + 7 AM for R2. Mark R2 done. Read R3 (callable/putable, key rate durations). 9 EOC set A.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d23',date:'2026-05-02',dayLabel:'Sat',title:'FI R3 complete + R4: Embedded options EOC + Credit models',sub:'9 EOC set B + 8 AM for R3. Mark R3. Read R4 (structural vs reduced-form). 11 EOC + 7 AM. Mark R4.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d24',date:'2026-05-03',dayLabel:'Sun',title:'FI R5: CDS mechanics, pricing, applications + EOC',sub:'Read R5 fully. 9 EOC + 6 AM-style Qs. Mark R5 done.',type:'q',time:'2–3 hrs',sun:true},
+{id:'d25',date:'2026-05-04',dayLabel:'Mon',title:'FI R6 (Part 1): MBS, CMO, PAC tranches, prepayment risk',sub:'Read R6 first half. PSA model logic.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d26',date:'2026-05-05',dayLabel:'Tue',title:'FI R6 (Part 2): OAS for MBS + EOC',sub:'Finish R6. 10 EOC + 6 AM-style Qs. Mark R6 done.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d27',date:'2026-05-06',dayLabel:'Wed',title:'FI revision: Redo 10 hardest FI questions from all readings',sub:'Focus: binomial tree + OAS + CDS. These are highest-tested FI concepts.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d28',date:'2026-05-07',dayLabel:'Thu',title:'FI prep: Formula sheet for entire Fixed Income topic',sub:'Build one-page FI formula sheet. Know every formula in it.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d29',date:'2026-05-08',dayLabel:'Fri',title:'FIXED INCOME REVIEW + timed 18-Q mock item set',sub:'Redo 10 hardest EOC Qs. Then 18-Q timed mock (35 min strict). Review all wrong. Mark FI Review done.',type:'mock',time:'4–5 hrs',wknd:true},
+{id:'d30',date:'2026-05-09',dayLabel:'Sat',title:'FI catch-up + FSA R1 intro: Weak FI spots + Intercorporate investments',sub:'Redo weakest FI reading. Then read FSA R1 first half (equity method, consolidation).',type:'study',time:'4–5 hrs',wknd:true},
+{id:'d31',date:'2026-05-10',dayLabel:'Sun',title:'FSA R1 complete + EOC: Goodwill, NCI, business combinations',sub:'Finish R1. 11 EOC + 7 AM-style Qs. Mark R1 done.',type:'q',time:'2–3 hrs',sun:true},
+
+// ═══ PHASE 1: FSA ═══
+{id:'d32',date:'2026-05-11',dayLabel:'Mon',title:'FSA R2 (Part 1): Defined benefit pension — funded status, TPPC',sub:'Read R2 first half. Funded status = PV obligation − plan assets.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d33',date:'2026-05-12',dayLabel:'Tue',title:'FSA R2 (Part 2): Share-based comp, diluted EPS',sub:'Finish R2 reading.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d34',date:'2026-05-13',dayLabel:'Wed',title:'FSA R2 EOC: 10 EOC + 6 AM-style Qs. Mark R2 done.',sub:'Full pension + share-based question set.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d35',date:'2026-05-14',dayLabel:'Thu',title:'FSA R3 (Part 1): Temporal vs current rate FX translation',sub:'Read R3 first half. Temporal: monetary items at current rate.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d36',date:'2026-05-15',dayLabel:'Fri',title:'FSA R3 complete + R4: FX EOC + Financial institutions analysis',sub:'Finish R3. 11 EOC + 7 AM. Mark R3. Read R4 (NIM, CAMELS, Basel III). 9 EOC + 6 AM. Mark R4.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d37',date:'2026-05-16',dayLabel:'Sat',title:'FSA R5 + R6: Earnings quality + Integration case + all EOC',sub:'Read R5 (Beneish M-score, accruals). 8 EOC + 5 AM. Mark R5. Read R6. 14 EOC + 4 AM. Mark R6.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d38',date:'2026-05-17',dayLabel:'Sun',title:'FSA REVIEW + timed 18-Q mock item set',sub:'Redo 10 hardest FSA Qs. 18-Q timed mock (35 min). Review wrong. Mark FSA Review done.',type:'mock',time:'2–3 hrs',sun:true},
+{id:'d39',date:'2026-05-18',dayLabel:'Mon',title:'Phase 1 catch-up: Weakest Phase 1 topic targeted revision',sub:'Pick lowest mock score (Equity/FI/FSA). 15 targeted Qs.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d40',date:'2026-05-19',dayLabel:'Tue',title:'Phase 1 catch-up: Mixed 20-Q set across all Phase 1 topics',sub:'20 Qs timed. Score. Note recurring error patterns.',type:'rev',time:'1.5 hrs',wknd:false},
+
+// ═══ PHASE 2: DERIVATIVES ═══
+{id:'d41',date:'2026-05-20',dayLabel:'Wed',title:'Deriv R1 (Part 1): Forward contract pricing, FRA, cost of carry',sub:'Read R1. Equity, currency, fixed-income forwards.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d42',date:'2026-05-21',dayLabel:'Thu',title:'Deriv R1 (Part 2): Futures, swap pricing',sub:'Finish R1 reading.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d43',date:'2026-05-22',dayLabel:'Fri',title:'Deriv R1 EOC + R2: Forwards Qs + BSM model full read',sub:'12 EOC + 8 AM for R1. Mark R1 done. Read R2 (BSM, put-call parity, Greeks). 9 EOC set A.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d44',date:'2026-05-23',dayLabel:'Sat',title:'Deriv R2 complete + R3: Options EOC + Strategies',sub:'9 EOC set B + 8 AM for R2. Mark R2. Read R3 (covered calls, protective puts, collars, spreads). 9 EOC + 6 AM. Mark R3.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d45',date:'2026-05-24',dayLabel:'Sun',title:'DERIVATIVES REVIEW + timed 12-Q mock',sub:'Redo hardest Deriv Qs. 12-Q timed mock (25 min). Review. Mark Deriv Review done.',type:'mock',time:'2–3 hrs',sun:true},
+
+// ═══ PHASE 2: PORTFOLIO MANAGEMENT ═══
+{id:'d46',date:'2026-05-25',dayLabel:'Mon',title:'PM R1: ETF mechanics, creation/redemption, NAV vs price',sub:'Read R1 fully. 16 EOC + 5 AM-style Qs. Mark R1 done.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d47',date:'2026-05-26',dayLabel:'Tue',title:'PM R2 (Part 1): Factor models — Barra, APT, factor exposures',sub:'Read R2 first half. Active vs passive factor attribution.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d48',date:'2026-05-27',dayLabel:'Wed',title:'PM R2 (Part 2) + EOC: Attribution + 10 EOC + 6 AM. Mark R2 done.',sub:'Finish R2. Full question set.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d49',date:'2026-05-28',dayLabel:'Thu',title:'PM R3 (Part 1): VaR — parametric, historical simulation, Monte Carlo',sub:'Read R3 first half. Know strengths/weaknesses of each method.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d50',date:'2026-05-29',dayLabel:'Fri',title:'PM R3 complete + R4: VaR EOC + Backtesting',sub:'Finish R3. 11 EOC + 7 AM. Mark R3. Read R4 (look-ahead, survivorship bias). 14 EOC + 4 AM. Mark R4.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d51',date:'2026-05-30',dayLabel:'Sat',title:'PM R5 + R6: Econ & Markets + Active Management',sub:'Read R5 (Taylor rule, business cycles). 9 EOC + 6 AM. Mark R5. Read R6 (fundamental law, IR = IC × √BR). 10 EOC + 6 AM. Mark R6.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d52',date:'2026-05-31',dayLabel:'Sun',title:'PM R7 + PM REVIEW: Market microstructure + timed 12-Q mock',sub:'Read R7 (implementation shortfall). 14 EOC + 4 AM. Mark R7. Then 12-Q timed mock. Mark PM Review done.',type:'mock',time:'2–3 hrs',sun:true},
+
+// ═══ PHASE 2: QUANTITATIVE METHODS ═══
+{id:'d53',date:'2026-06-01',dayLabel:'Mon',title:'Quant R1 (Part 1): Multiple regression assumptions, OLS',sub:'Read R1 first half. Gauss-Markov assumptions.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d54',date:'2026-06-02',dayLabel:'Tue',title:'Quant R1 (Part 2): Interpretation, inference + EOC',sub:'Finish R1. 10 EOC + 6 AM-style Qs. Mark R1 done.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d55',date:'2026-06-03',dayLabel:'Wed',title:'Quant R2: R², F-stat, t-tests, ANOVA + EOC',sub:'Read R2. 9 EOC + 6 AM-style Qs. Mark R2 done.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d56',date:'2026-06-04',dayLabel:'Thu',title:'Quant R3 (Part 1): Multicollinearity, heteroskedasticity, serial correlation',sub:'Read R3. Know how to detect and fix each violation.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d57',date:'2026-06-05',dayLabel:'Fri',title:'Quant R3 EOC + R4: Misspecification Qs + Logistic regression',sub:'7 EOC + 5 AM for R3. Mark R3. Read R4 (logistic regression, probit). 16 EOC + 5 AM. Mark R4.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d58',date:'2026-06-06',dayLabel:'Sat',title:'Quant R5 + R6 + R7: Time series + ML + Big data + all EOC',sub:'Read R5 (AR, ARCH, GARCH). 11 EOC + 7 AM. Mark R5. Read R6 (ML). 14 EOC + 4 AM. Mark R6. Read R7. 12 EOC + 4 AM. Mark R7.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d59',date:'2026-06-07',dayLabel:'Sun',title:'QUANT REVIEW + timed 12-Q mock',sub:'Redo hardest Quant Qs (focus: AR, heteroskedasticity). 12-Q timed mock. Mark Quant Review done.',type:'mock',time:'2–3 hrs',sun:true},
+
+// ═══ PHASE 2: ECONOMICS ═══
+{id:'d60',date:'2026-06-08',dayLabel:'Mon',title:'Econ R1 (Part 1): PPP, IRP, Fisher effect, BOP framework',sub:'Read R1. Connect PPP → IRP → carry trade.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d61',date:'2026-06-09',dayLabel:'Tue',title:'Econ R1 (Part 2): FX forecasting + EOC. Econ R2: Solow model',sub:'Finish R1. 9 EOC + 6 AM. Mark R1. Read R2 (Solow, TFP). 8 EOC + 5 AM. Mark R2.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d62',date:'2026-06-10',dayLabel:'Wed',title:'Econ R3: Regulation, cost-benefit + EOC. Mark R3 done.',sub:'Read R3. 12 EOC + 4 AM-style Qs. Mark R3 done.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d63',date:'2026-06-11',dayLabel:'Thu',title:'Econ revision + REVIEW: Redo hardest Econ Qs',sub:'10 targeted Qs. Then 8-Q timed mock. Mark Econ Review done.',type:'mock',time:'1.5 hrs',wknd:false},
+
+// ═══ PHASE 2: CORPORATE ISSUERS ═══
+{id:'d64',date:'2026-06-12',dayLabel:'Fri',title:'Corp R1 + R2: Dividends & repurchases + ESG + all EOC',sub:'Read R1 (signalling, clientele, M-M). 9 EOC + 6 AM. Mark R1. Read R2 (ESG). 14 EOC + 4 AM. Mark R2.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d65',date:'2026-06-13',dayLabel:'Sat',title:'Corp R3 + R4 + Corp REVIEW: Capital allocation + Business models',sub:'Read R3 (NPV vs IRR, real options). 10 EOC + 6 AM. Mark R3. Read R4. 12 EOC + 4 AM. Mark R4. 10-Q timed mock. Mark Corp Review done.',type:'mock',time:'4–5 hrs',wknd:true},
+
+// ═══ PHASE 2: ALTERNATIVES ═══
+{id:'d66',date:'2026-06-14',dayLabel:'Sun',title:'Alts R1 + R2: Real estate + REITs + all EOC',sub:'Read R1 (NOI, cap rate, GIM). 10 EOC + 6 AM. Mark R1. Read R2 (FFO, AFFO, NAV). 9 EOC + 6 AM. Mark R2.',type:'q',time:'2–3 hrs',sun:true},
+{id:'d67',date:'2026-06-15',dayLabel:'Mon',title:'Alts R3 (Part 1): LBO model, IRR, MOIC, waterfall structures',sub:'Read R3 first half. IRR vs MOIC: different metrics, different uses.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d68',date:'2026-06-16',dayLabel:'Tue',title:'Alts R3 (Part 2): Carried interest, NAV + EOC',sub:'Finish R3. 11 EOC + 7 AM-style Qs. Mark R3 done.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d69',date:'2026-06-17',dayLabel:'Wed',title:'Alts R4: Commodities — roll yield, contango, backwardation',sub:'Read R4 fully. 16 EOC + 5 AM-style Qs. Mark R4 done.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d70',date:'2026-06-18',dayLabel:'Thu',title:'Alts catch-up + REVIEW: Redo hardest Alts Qs',sub:'10 targeted Qs. Then 10-Q timed mock. Mark Alts Review done.',type:'mock',time:'1.5 hrs',wknd:false},
+
+// ═══ PHASE 2 BUFFER ═══
+{id:'d71',date:'2026-06-19',dayLabel:'Fri',title:'Phase 2 buffer: Weakest Phase 2 topic — targeted re-read',sub:'Which topic scored lowest? Re-read key formulas. 15 targeted Qs.',type:'rev',time:'4–5 hrs',wknd:true},
+{id:'d72',date:'2026-06-20',dayLabel:'Sat',title:'INTEGRATED MOCK 1: Phase 1 + Phase 2 mixed 60-Q timed exam',sub:'Full 60-Q mixed exam. Timed strictly (80 min). Score. Review all wrong. Note topic gaps.',type:'mock',time:'4–5 hrs',wknd:true},
+{id:'d73',date:'2026-06-21',dayLabel:'Sun',title:'Integrated Mock 1 review: Weakest 2 topics targeted revision',sub:'Go through wrong answers. 15 targeted Qs on 2 weakest topics.',type:'rev',time:'2–3 hrs',sun:true},
+
+// ═══ PHASE 3: ETHICS ═══
+{id:'d74',date:'2026-06-22',dayLabel:'Mon',title:'Ethics R1 (Part 1): Code of ethics, professionalism, Standards I–II',sub:'Read R1. Ethics is application — understand the spirit, not just the rule.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d75',date:'2026-06-23',dayLabel:'Tue',title:'Ethics R1 (Part 2): Duties to clients, employers + EOC',sub:'Finish R1. 9 EOC + 6 AM-style Qs. Mark R1 done.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d76',date:'2026-06-24',dayLabel:'Wed',title:'Ethics R2 (Part 1): Standards I–IV — scenarios & grey areas',sub:'Read R2 first half. Work through every example. Don\'t rush.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d77',date:'2026-06-25',dayLabel:'Thu',title:'Ethics R2 (Part 2): Standards V–VII — mosaic theory, manipulation',sub:'Read R2 second half. Note ambiguous scenarios — they are tested.',type:'study',time:'1.5 hrs',wknd:false},
+{id:'d78',date:'2026-06-26',dayLabel:'Fri',title:'Ethics R2 EOC + R3: Standards Qs + CFAI case studies',sub:'12 EOC set A + 12 set B + 8 AM for R2. Mark R2. Read R3 cases. 6 EOC + 4 AM. Mark R3.',type:'q',time:'4–5 hrs',wknd:true},
+{id:'d79',date:'2026-06-27',dayLabel:'Sat',title:'Ethics R4 + ETHICS REVIEW + timed 15-Q case mock',sub:'Read R4 (asset manager code). 10 EOC + 3 AM. Mark R4. Redo 15 hardest ethics Qs. 15-Q timed mock. Mark Ethics Review done.',type:'mock',time:'4–5 hrs',wknd:true},
+{id:'d80',date:'2026-06-28',dayLabel:'Sun',title:'Ethics consolidation: Re-read R2 + R3 vignettes once more',sub:'No questions. Pure reading of grey-area scenarios. Internalise the reasoning.',type:'rev',time:'2–3 hrs',sun:true},
+
+// ═══ FULL REVISION + MOCKS ═══
+{id:'d81',date:'2026-06-29',dayLabel:'Mon',title:'Full revision: Equity formula sheet + 10 mixed Equity Qs',sub:'30 min formulas. 60 min questions.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d82',date:'2026-06-30',dayLabel:'Tue',title:'Full revision: Fixed Income formula sheet + 10 mixed FI Qs',sub:'Binomial tree, OAS, CDS. Drill.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d83',date:'2026-07-01',dayLabel:'Wed',title:'Full revision: FSA key ratios + 10 mixed FSA Qs',sub:'Pension TPPC, FX translation, intercorporate. Drill.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d84',date:'2026-07-02',dayLabel:'Thu',title:'Full revision: Deriv + PM formulas + 10 Qs each',sub:'BSM Greeks, fundamental law, VaR methods.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d85',date:'2026-07-03',dayLabel:'Fri',title:'FULL MOCK EXAM 1: 88 Qs AM + PM — strictly timed 3 hrs',sub:'44 Qs AM (2h15), break, 44 Qs PM. No pausing. Full exam conditions. Score every topic.',type:'mock',time:'4–5 hrs',wknd:true},
+{id:'d86',date:'2026-07-04',dayLabel:'Sat',title:'Mock 1 review: Every wrong answer + targeted revision',sub:'Read every explanation. Tag each topic: Weak / Needs revision / OK. Redo all wrong Qs.',type:'rev',time:'4–5 hrs',wknd:true},
+{id:'d87',date:'2026-07-05',dayLabel:'Sun',title:'Mock 1 targeted follow-up: Weakest 2 topics — 15 Qs each',sub:'Targeted drilling. Focus on highest-weight topics first.',type:'rev',time:'2–3 hrs',sun:true},
+{id:'d88',date:'2026-07-06',dayLabel:'Mon',title:'Mixed 20-Q timed: all topics',sub:'20 Qs in 25 min. Score. Review.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d89',date:'2026-07-07',dayLabel:'Tue',title:'Ethics targeted drill: 15 case Qs timed',sub:'No reading. Pure question practice. Review explanations carefully.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d90',date:'2026-07-08',dayLabel:'Wed',title:'Mixed 20-Q timed: high-weight topics (Equity, FI, PM)',sub:'20 Qs. Score. Push for 70%+.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d91',date:'2026-07-09',dayLabel:'Thu',title:'Formula review: full CFA L2 key formula pass-through',sub:'45 min formulas. 45 min mixed Qs.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d92',date:'2026-07-10',dayLabel:'Fri',title:'FULL MOCK EXAM 2: 88 Qs AM + PM — target 65%+',sub:'Full timed exam. Score. Record topic breakdown. Identify gaps.',type:'mock',time:'4–5 hrs',wknd:true},
+{id:'d93',date:'2026-07-11',dayLabel:'Sat',title:'Mock 2 review + targeted revision: 2 weakest topics',sub:'Go through all wrong Qs. Targeted re-read of 2 lowest scoring topics.',type:'rev',time:'4–5 hrs',wknd:true},
+{id:'d94',date:'2026-07-12',dayLabel:'Sun',title:'Mixed 25-Q timed: all 10 topics represented',sub:'25 Qs in 30 min. Score and review.',type:'rev',time:'2–3 hrs',sun:true},
+{id:'d95',date:'2026-07-13',dayLabel:'Mon',title:'Weak topic revision: Quant or Derivatives deep dive',sub:'Whichever scored worse in Mock 2. 15 targeted Qs.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d96',date:'2026-07-14',dayLabel:'Tue',title:'Ethics final case drill: 15 AM-style case Qs',sub:'Know the grey areas cold. Review all explanations.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d97',date:'2026-07-15',dayLabel:'Wed',title:'Mixed 20-Q: Equity + FSA + PM',sub:'20 Qs. Score. Note patterns in wrong answers.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d98',date:'2026-07-16',dayLabel:'Thu',title:'Formula consolidation: all 10 topics — 3 key formulas each',sub:'30 min formulas. 60 min mixed Qs.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d99',date:'2026-07-17',dayLabel:'Fri',title:'FULL MOCK EXAM 3: 88 Qs AM + PM — target 68%+',sub:'Full timed exam. Score. Record. Identify final gaps.',type:'mock',time:'4–5 hrs',wknd:true},
+{id:'d100',date:'2026-07-18',dayLabel:'Sat',title:'Mock 3 review + final targeted revision sprint',sub:'All wrong answers. 1-page summary of 2 weakest topics. 20 targeted Qs.',type:'rev',time:'4–5 hrs',wknd:true},
+{id:'d101',date:'2026-07-19',dayLabel:'Sun',title:'Mixed light session: 20 Qs + ethics vignette',sub:'Low intensity. 2 hours max. Protect mental energy.',type:'rev',time:'2 hrs',sun:true},
+{id:'d102',date:'2026-07-20',dayLabel:'Mon',title:'Final weeks: 15 mixed Qs timed. Review wrong.',sub:'Keep the engine warm. Light and consistent.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d103',date:'2026-07-21',dayLabel:'Tue',title:'Final weeks: Ethics vignette — 10 case Qs',sub:'One final ethics round. Standards without hesitation.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d104',date:'2026-07-22',dayLabel:'Wed',title:'Final weeks: FI binomial tree + RI valuation drill — 10 Qs',sub:'Most-tested hard concepts. Own them.',type:'q',time:'1.5 hrs',wknd:false},
+{id:'d105',date:'2026-07-23',dayLabel:'Thu',title:'Final weeks: PM fundamental law + FSA ratios — 10 Qs',sub:'High-weight mixed Qs.',type:'rev',time:'1.5 hrs',wknd:false},
+{id:'d106',date:'2026-07-24',dayLabel:'Fri',title:'FULL MOCK EXAM 4: 88 Qs AM + PM — target 70%+',sub:'Final full mock. Simulate exam day. Score. Note starting point for last push.',type:'mock',time:'4–5 hrs',wknd:true},
+{id:'d107',date:'2026-07-25',dayLabel:'Sat',title:'Mock 4 review + formula final pass',sub:'All wrong answers. Final formula sheet read. You are nearly there.',type:'rev',time:'4–5 hrs',wknd:true},
+{id:'d108',date:'2026-07-26',dayLabel:'Sun',title:'Light session: 15 mixed Qs + ethics vignette + rest',sub:'1.5 hours max. Mostly rest. Protect your brain for the final stretch.',type:'rev',time:'1.5 hrs',sun:true},
+{id:'d109',date:'2026-07-27',dayLabel:'Mon',title:'Final push: 10 mixed Qs — highest weight topics only',sub:'Equity + FI + PM + Ethics. Light session.',type:'rev',time:'1 hr',wknd:false},
+{id:'d110',date:'2026-07-28',dayLabel:'Tue',title:'Final push: Ethics vignette — 5 Qs review',sub:'Very light. Ethics grey areas one final time.',type:'rev',time:'45 min',wknd:false},
+{id:'d111',date:'2026-07-29',dayLabel:'Wed',title:'Final push: Formula flash cards — all topics, 3 min each',sub:'30 min only. Commit key formulas to memory.',type:'rev',time:'30 min',wknd:false},
+{id:'d112',date:'2026-07-30',dayLabel:'Thu',title:'Pre-exam: Logistics prep only — no studying',sub:'Confirm exam venue, prepare ID, pack bag, set 2 alarms. Sleep by 10pm.',type:'rev',time:'REST',wknd:false},
+{id:'d113',date:'2026-11-19',dayLabel:'Thu',title:'CFA LEVEL II EXAM — 19 November 2026',sub:'You have done the work. Stay calm. Read each vignette twice before the questions. Trust yourself.',type:'mock',time:'EXAM DAY',wknd:false},
+];
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let prog=JSON.parse(localStorage.getItem('cfa26_rdg')||'{}');
+let dayProg=JSON.parse(localStorage.getItem('cfa26_day')||'{}');
+let taskProg=JSON.parse(localStorage.getItem('cfa26_task')||'{}');
+function save(){localStorage.setItem('cfa26_rdg',JSON.stringify(prog));localStorage.setItem('cfa26_day',JSON.stringify(dayProg));localStorage.setItem('cfa26_task',JSON.stringify(taskProg));}
+
+function daysLeft(){return Math.max(0,Math.ceil((EXAM-new Date())/86400000));}
+function totalR(){return SUBJECTS.reduce((s,sub)=>s+sub.readings.length,0);}
+function doneR(){return SUBJECTS.reduce((s,sub)=>s+sub.readings.filter(r=>prog[r.id]).length,0);}
+function doneDays(){return Object.values(dayProg).filter(Boolean).length;}
+function subPct(sub){const d=sub.readings.filter(r=>prog[r.id]).length;return{done:d,total:sub.readings.length,pct:sub.readings.length?Math.round(d/sub.readings.length*100):0};}
+function todayStr(){const t=new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');}
+function checkSvg(){return '<svg class="chk" width="11" height="9" viewBox="0 0 11 9"><path d="M1 4.5L4 7.5L10 1.5"/></svg>';}
+
+// ── MOTIVATION ────────────────────────────────────────────────────────────────
+function renderMotiv(){
+  const m=MOTIVATIONS[motivIdx];
+  const today=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  const dow=new Date().getDay();
+  const isWknd=dow===5||dow===6;
+  const isSun=dow===0;
+  const dayNote=isWknd?'Main engine day — 4–5 hrs today. This is where the exam is won.':isSun?'Consolidation day — 2–3 hrs. Review and reinforce.':'Weekday — 1.5 hrs after work. One focused task.';
+  document.getElementById('motiv-box').innerHTML=`
+    <div class="motiv-top">
+      <div class="motiv-tag">Daily motivation · ${motivIdx+1}/${MOTIVATIONS.length}</div>
+      <button class="motiv-btn" onclick="nextMotiv()">Next quote ›</button>
+    </div>
+    <div class="motiv-q">"${m.q}"</div>
+    <div class="motiv-sub">${m.sub}</div>
+    <div class="motiv-day">${today} · ${dayNote}</div>`;
+}
+function nextMotiv(){motivIdx=(motivIdx+1)%MOTIVATIONS.length;renderMotiv();}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function renderStats(){
+  const dl=daysLeft();const done=doneR();const total=totalR();
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('cd').textContent=dl;
+  document.getElementById('home-stats').innerHTML=`
+    <div class="stat-card"><div class="stat-v">${done}/${total}</div><div class="stat-l">Readings done</div></div>
+    <div class="stat-card"><div class="stat-v">${pct}%</div><div class="stat-l">Overall progress</div></div>
+    <div class="stat-card"><div class="stat-v">${doneDays()}</div><div class="stat-l">Study days ticked</div></div>
+    <div class="stat-card"><div class="stat-v">${dl}</div><div class="stat-l">Days to exam</div></div>`;
+  document.getElementById('main-bar').style.width=pct+'%';
+}
+
+// ── TODAY ─────────────────────────────────────────────────────────────────────
+function renderToday(){
+  const td=todayStr();
+  const entry=SCHEDULE.find(d=>d.date===td);
+  const sec=document.getElementById('today-section');
+  if(!entry){sec.innerHTML='<div class="off-notice"><div class="off-title">No session scheduled today</div><div class="off-sub">Check the Schedule tab for your next study day</div></div>';return;}
+  const tasks=[
+    {key:`${entry.id}_t1`,lbl:entry.title,badge:entry.time,badgeType:entry.wknd?'tb-mock':entry.sun?'tb-q':'tb-study'},
+    {key:`${entry.id}_t2`,lbl:entry.sub,badge:entry.type==='mock'?'Mock':entry.type==='q'?'Questions':entry.type==='rev'?'Review':'Study',badgeType:`tb-${entry.type}`},
+  ];
+  const rows=tasks.map(t=>{
+    const done=taskProg[t.key]?'done':'';const chk=done?checkSvg():'';
+    return`<div class="t-task ${done}" onclick="toggleTask('${t.key}',this)"><div class="t-chk">${chk}</div><div class="t-lbl">${t.lbl}</div><span class="t-badge ${t.badgeType}">${t.badge}</span></div>`;
+  }).join('');
+  const isDone=dayProg[entry.id]?'done':'';
+  sec.innerHTML=`<div class="today-box">
+    <div class="today-hdr"><span class="today-hdr-l">Today · ${entry.dayLabel} ${entry.date.slice(5).replace('-','/')}</span><span class="today-hdr-r">${entry.time}</span></div>
+    <div class="today-body">
+      <div class="today-title">${entry.title}</div>
+      <div class="today-meta">${entry.sub}</div>
+      <div class="today-tasks">${rows}</div>
+      <div class="t-task ${isDone}" style="margin-top:8px;background:var(--green-bg);border:1px solid rgba(61,190,122,.2);border-radius:var(--r2)" onclick="toggleDay('${entry.id}',this)">
+        <div class="t-chk" style="border-color:var(--green)">${isDone?checkSvg():''}</div>
+        <div class="t-lbl" style="font-weight:600;color:var(--green)">Mark today's session complete</div>
+      </div>
+    </div>
+  </div>`;
+}
+function toggleTask(key,el){taskProg[key]=!taskProg[key];save();el.classList.toggle('done');el.querySelector('.t-chk').innerHTML=taskProg[key]?checkSvg():'';}
+function toggleDay(id,el){dayProg[id]=!dayProg[id];save();renderStats();el.classList.toggle('done');el.querySelector('.t-chk').innerHTML=dayProg[id]?checkSvg():'';renderCharts&&renderCharts();}
+
+// ── SUBJECTS ──────────────────────────────────────────────────────────────────
+function renderSubjects(){
+  const tips={
+    equity:'DDM: know GGM, H-model, two-stage, three-stage cold. FCF: master NCC, FCInv, WCInv adjustments from NI and EBIT. Price multiples: derive justified P/E from GGM. Residual income: clean surplus violations (OCI, FX) are tested.',
+    fi:'Binomial tree is tested every single year — build it by hand until it is automatic. OAS = Z-spread minus option cost. CDS spread interpretation. Know all 3 VaR methods for PM too.',
+    fsa:'Hardest Phase 1 topic. Equity method vs consolidation thresholds. Temporal vs current rate FX: know which items use which rate. Pension TPPC formula. Spend extra time here.',
+    deriv:'Put-call parity is foundational. BSM: know each input and its directional effect on call/put. Draw payoff diagrams for every strategy — visuals help retention.',
+    pm:'Fundamental law: IR = IC × √BR. Know it, derive it, apply it. Factor models: factor exposure vs factor return attribution. VaR: all 3 methods, their pros/cons, and CVaR.',
+    quant:'Every regression assumption (Gauss-Markov) has a test and a fix — learn them as pairs. Time-series sequence: AR → unit root → cointegration → ARCH/GARCH.',
+    econ:'PPP + IRP + Fisher effect: understand how they all link. Carry trade as IRP violation. Solow model: growth accounting equation and convergence.',
+    corp:'NPV vs IRR conflicts: scale differences, timing, multiple IRR. Know when they disagree and why NPV wins. Dividend irrelevance (M-M) vs real-world signalling.',
+    alts:'Real estate: NOI/cap rate = value, know cold. REIT: FFO = NI + D&A − gains, AFFO = FFO − capex. PE: IRR vs MOIC, waterfall mechanics. Commodities: roll yield, contango, backwardation.',
+    ethics:'Apply the spirit, not just the letter. Focus on grey areas — these are what the exam tests. CFAI always has a plausible but wrong answer. Read every case vignette twice.',
+  };
+  document.getElementById('subj-list').innerHTML=SUBJECTS.map((sub,i)=>{
+    const{done,total,pct}=subPct(sub);const color=COLORS[sub.id];
+    const rows=sub.readings.map(r=>{
+      const d=prog[r.id]?'done':'';const chk=d?checkSvg():'';
+      const qInfo=r.eoc>0?`${r.eoc} EOC + ${r.am} AM-style Qs`:`${r.am} AM-style timed Qs`;
+      const typeTag=r.rev?`<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:var(--green-bg);color:var(--green)">Review + mock</span>`:`<span style="font-size:10px;padding:2px 7px;border-radius:8px;background:var(--blue-bg);color:var(--blue)">Reading + EOC</span>`;
+      const doneTag=d?'<span class="r-done-tag">Done</span>':'';
+      return`<div class="r-row ${d}" id="rr-${r.id}" onclick="toggleR('${r.id}','${sub.id}')"><div class="r-chk">${chk}</div><div class="r-info"><div class="r-label">${r.label}</div><div class="r-qs">${qInfo}</div>${typeTag}</div>${doneTag}</div>`;
+    }).join('');
+    return`<div class="subj-card" id="sc-${sub.id}">
+      <div class="subj-hdr" onclick="toggleSubj('${sub.id}')">
+        <div class="subj-dot" style="background:${color}"></div>
+        <div class="subj-info"><div class="subj-name">${sub.name}</div><div class="subj-meta" id="sm-${sub.id}">${total} readings · ${done} done</div><div class="pbar-wrap"><div class="pbar" id="pb-${sub.id}" style="width:${pct}%;background:${color}"></div></div></div>
+        <div class="subj-pct" id="sp-${sub.id}">${pct}%</div><div class="chev">▾</div>
+      </div>
+      <div class="readings-list"><div style="padding:10px 14px;background:rgba(0,0,0,.2);font-size:11px;color:var(--text-2);line-height:1.5;border-bottom:1px solid var(--border2)">${tips[sub.id]}</div>${rows}</div>
+    </div>`;
+  }).join('');
+}
+function toggleSubj(id){document.getElementById('sc-'+id).classList.toggle('open');}
+function toggleR(rid,subId){
+  prog[rid]=!prog[rid];save();
+  const row=document.getElementById('rr-'+rid);if(!row)return;
+  row.classList.toggle('done');
+  row.querySelector('.r-chk').innerHTML=prog[rid]?checkSvg():'';
+  const ex=row.querySelector('.r-done-tag');
+  if(prog[rid]&&!ex)row.insertAdjacentHTML('beforeend','<span class="r-done-tag">Done</span>');
+  if(!prog[rid]&&ex)ex.remove();
+  const sub=SUBJECTS.find(s=>s.id===subId);const{done,total,pct}=subPct(sub);
+  document.getElementById('sm-'+subId).textContent=`${total} readings · ${done} done`;
+  document.getElementById('pb-'+subId).style.width=pct+'%';
+  document.getElementById('sp-'+subId).textContent=pct+'%';
+  renderStats();
+}
+
+// ── SCHEDULE ──────────────────────────────────────────────────────────────────
+function renderSchedule(){
+  const phases=[
+    {name:'Phase 1: Equity · Fixed Income · FSA',dates:'Apr 10 – May 19, 2026',slice:[0,40]},
+    {name:'Phase 2: Derivatives · PM · Quant · Econ · Corp · Alternatives',dates:'May 20 – Jun 21, 2026',slice:[40,73]},
+    {name:'Phase 3: Ethics + Mocks + Final Revision',dates:'Jun 22 – Nov 19, 2026',slice:[73,113]},
+  ];
+  let html='';
+  phases.forEach((ph,pi)=>{
+    const phDays=SCHEDULE.slice(...ph.slice);
+    const studyDays=phDays.filter(d=>d.type!=='off');
+    const doneCt=studyDays.filter(d=>dayProg[d.id]).length;
+    html+=`<div class="phase-wrap" id="pw-${pi}">
+      <div class="phase-title-bar" onclick="togglePhase(${pi})">
+        <div><div class="pt-name">${ph.name}</div><div class="pt-dates">${ph.dates} · ${doneCt}/${studyDays.length} sessions done</div></div>
+        <div class="chev">▾</div>
+      </div><div class="phase-body">`;
+    phDays.forEach(d=>{
+      const done=dayProg[d.id]?'done':'';const chk=done?checkSvg():'';
+      const isWknd=d.wknd;const isSun=d.sun;
+      const timeClass=d.type==='mock'?'dt-mock':isWknd?'dt-wknd':isSun?'dt-wknd':'dt-wkday';
+      const timeLabel=isWknd?d.time+' — main engine':isSun?d.time+' — review/consolidation':d.time+' — after work';
+      html+=`<div class="day-row ${done}" id="dr-${d.id}" onclick="toggleDayRow('${d.id}',this)">
+        <div class="dr-chk">${chk}</div>
+        <div class="dr-day ${(isWknd||isSun)?'wknd':''}">${d.dayLabel}</div>
+        <div class="dr-info"><div class="dr-title">${d.date.slice(5).replace('-','/')} · ${d.title}</div><div class="dr-sub">${d.sub}</div><span class="dr-time ${timeClass}">${timeLabel}</span></div>
+      </div>`;
+    });
+    html+='</div></div>';
+  });
+  document.getElementById('sched-wrap').innerHTML=html;
+  document.getElementById('pw-0').classList.add('open');
+}
+function togglePhase(i){document.getElementById('pw-'+i).classList.toggle('open');}
+function toggleDayRow(id,el){dayProg[id]=!dayProg[id];save();renderStats();el.classList.toggle('done');el.querySelector('.dr-chk').innerHTML=dayProg[id]?checkSvg():'';}
+
+// ── CHARTS + INSIGHTS ─────────────────────────────────────────────────────────
+function renderCharts(){
+  const wrap=document.getElementById('charts-wrap');if(!wrap)return;
+  const done=doneR();const total=totalR();const pct=done/total;
+  const subData=SUBJECTS.map(s=>({...s,...subPct(s),color:COLORS[s.id]}));
+  const p1=SUBJECTS.filter(s=>s.phase===1);const p2=SUBJECTS.filter(s=>s.phase===2);const p3=SUBJECTS.filter(s=>s.phase===3);
+  const phData=[
+    {name:'Phase 1',done:p1.reduce((s,sub)=>s+subPct(sub).done,0),total:p1.reduce((s,sub)=>s+sub.readings.length,0),color:'#4A90D9'},
+    {name:'Phase 2',done:p2.reduce((s,sub)=>s+subPct(sub).done,0),total:p2.reduce((s,sub)=>s+sub.readings.length,0),color:'#C9A84C'},
+    {name:'Phase 3',done:p3.reduce((s,sub)=>s+subPct(sub).done,0),total:p3.reduce((s,sub)=>s+sub.readings.length,0),color:'#3DBE7A'},
+  ];
+  const dl=daysLeft();
+  const remaining=total-done;
+  const weeklyNeeded=dl>0?((remaining/(dl/7)).toFixed(1)):0;
+  const totalStudyDays=SCHEDULE.filter(d=>d.type!=='off').length;
+  const doneStudyDays=SCHEDULE.filter(d=>d.type!=='off'&&dayProg[d.id]).length;
+  const sessionPct=totalStudyDays?Math.round(doneStudyDays/totalStudyDays*100):0;
+  const sorted=[...subData].sort((a,b)=>a.pct-b.pct);
+  const weakest=sorted.filter(s=>s.pct<80);
+  const strongest=sorted.filter(s=>s.pct>0).reverse();
+
+  // Build insights
+  const insightGroups=[];
+
+  // WARNINGS
+  const warns=[];
+  if(done===0)warns.push({text:`<strong>Start now.</strong> Tick your first reading in the Subjects tab. The tracker only shows progress you mark yourself — nothing auto-completes.`});
+  if(weakest[0]&&weakest[0].pct<50&&done>0)warns.push({text:`<strong>${weakest[0].name}</strong> is your lowest at ${weakest[0].pct}%. ${weakest[0].phase===1?'This is a high-weight Phase 1 topic — prioritise it.':'Schedule an extra Friday or Saturday block here.'}`});
+  if(weakest[1]&&weakest[1].pct<30&&done>0)warns.push({text:`<strong>${weakest[1].name}</strong> is also behind at ${weakest[1].pct}%. Don't let it fall further — use one weekend session to catch up.`});
+  if(dl<90&&pct<0.6)warns.push({text:`<strong>Pace alert:</strong> ${dl} days left and only ${Math.round(pct*100)}% done. Prioritise Equity, Fixed Income, FSA and Ethics — they carry the most exam weight.`});
+  if(dl<60&&pct<0.8)warns.push({text:`<strong>Final stretch:</strong> Focus only on high-weight topics and mocks. No new reading unless absolutely necessary.`});
+  const p1sub=SUBJECTS.filter(s=>s.phase===1);const p1done=p1sub.reduce((s,sub)=>s+subPct(sub).done,0);const p1total=p1sub.reduce((s,sub)=>s+sub.readings.length,0);
+  if(dl<150&&p1done<p1total*0.5)warns.push({text:`<strong>Phase 1 is behind.</strong> Equity, FI and FSA together represent ~35–45% of exam weight. Double down on Friday and Saturday sessions for these topics.`});
+  if(warns.length)insightGroups.push({label:'What needs attention',cls:'lbl-warn',items:warns,type:'warn'});
+
+  // GOOD
+  const goods=[];
+  if(strongest[0]&&strongest[0].pct>=80)goods.push({text:`<strong>${strongest[0].name}</strong> is at ${strongest[0].pct}% — excellent. Maintain with occasional revision sets, not re-reading.`});
+  if(done>=5&&pct>0.4)goods.push({text:`<strong>Solid momentum</strong> — ${done} readings done. ${Math.round(pct*100)}% of the curriculum complete. The consistency is showing.`});
+  if(doneStudyDays>=10)goods.push({text:`<strong>${doneStudyDays} study sessions</strong> completed. Every session is a brick in the foundation. Keep building.`});
+  if(goods.length)insightGroups.push({label:'What is working',cls:'lbl-good',items:goods,type:'good'});
+
+  // ACTIONS
+  const actions=[];
+  if(remaining>0&&dl>0)actions.push({text:`You need <strong>${weeklyNeeded} readings per week</strong> to finish all content before the full mock phase. Friday and Saturday are your best opportunity to close this gap.`});
+  const ethSub=SUBJECTS.find(s=>s.id==='ethics');const ethPct=subPct(ethSub).pct;
+  if(ethPct<100&&dl<120)actions.push({text:`<strong>Ethics is at ${ethPct}%.</strong> Ethics must be done fresh — close to exam day. If you haven't started yet, that is correct by design.`});
+  const mockDays=SCHEDULE.filter(d=>d.type==='mock'&&d.title.includes('FULL MOCK'));
+  const doneMocks=mockDays.filter(d=>dayProg[d.id]).length;
+  actions.push({text:`<strong>${doneMocks}/${mockDays.length} full mock exams</strong> completed. Mocks are your single most powerful revision tool — do every one under timed, exam-day conditions.`});
+  if(dl>60)actions.push({text:`Use your <strong>Friday and Saturday blocks</strong> for new content and full question sets. Use Sunday to consolidate and review. Mon–Thu: one focused task per night.`});
+  if(actions.length)insightGroups.push({label:'What to do next',cls:'lbl-action',items:actions,type:'action'});
+
+  // INFO
+  const infos=[];
+  infos.push({text:`<strong>Study hours logged:</strong> ~${Math.round(doneStudyDays*2.5)} hours (estimate). A passing candidate typically logs 300–400 hours. You are on track if you protect your weekend sessions.`});
+  const nextUnfinished=SUBJECTS.find(s=>subPct(s).pct<100);
+  if(nextUnfinished)infos.push({text:`<strong>Next to focus on:</strong> ${nextUnfinished.name} (${subPct(nextUnfinished).pct}% done). Tick each reading as you finish it to watch your chart grow.`});
+  if(infos.length)insightGroups.push({label:'Context & info',cls:'lbl-info',items:infos,type:'info'});
+
+  const insightHtml=insightGroups.length?insightGroups.map(g=>`
+    <div class="insight-group-label ${g.cls}">${g.label}</div>
+    ${g.items.map(i=>`<div class="insight ins-${g.type}"><div class="i-icon i-${g.type}">${g.type==='good'?'✓':g.type==='warn'?'!':g.type==='action'?'→':'i'}</div><span>${i.text}</span></div>`).join('')}
+  `).join(''):
+  '<div class="insight-empty">Start ticking off readings and sessions — your personalised insights will appear here as you progress.</div>';
+
+  wrap.innerHTML=`
+    <div class="chart-card"><div class="chart-hdr">Overall progress</div><div class="chart-body"><canvas id="c-donut" height="200"></canvas><div class="legend" id="leg-donut"></div></div></div>
+    <div class="chart-card"><div class="chart-hdr">Progress by phase</div><div class="chart-body">
+      ${phData.map(p=>`<div class="phase-progress-row"><div class="pp-label">${p.name}</div><div class="pp-bar-wrap"><div class="pp-bar" style="width:${p.total?Math.round(p.done/p.total*100):0}%;background:${p.color}"></div></div><div class="pp-pct">${p.total?Math.round(p.done/p.total*100):0}%</div></div>`).join('')}
+      <div class="phase-progress-row" style="margin-top:6px;border-top:1px solid var(--border2);padding-top:10px"><div class="pp-label" style="font-size:11px">Sessions</div><div class="pp-bar-wrap"><div class="pp-bar" style="width:${sessionPct}%;background:var(--purple)"></div></div><div class="pp-pct">${sessionPct}%</div></div>
+    </div></div>
+    <div class="chart-card"><div class="chart-hdr">Readings by subject</div><div class="chart-body"><canvas id="c-bar" height="280"></canvas></div></div>
+    <div class="chart-card"><div class="chart-hdr">Insights & recommendations</div><div class="chart-body"><div class="insight-section">${insightHtml}</div></div></div>`;
+
+  drawDonut(subData,done,total);
+  drawBar(subData);
+}
+
+function drawDonut(subData,done,total){
+  const c=document.getElementById('c-donut');if(!c)return;
+  const size=Math.min(c.parentElement.offsetWidth,230);
+  c.width=size*2;c.height=size*2;c.style.width=size+'px';c.style.height=size+'px';
+  const ctx=c.getContext('2d');const cx=size,cy=size,r=size*.75,rIn=size*.48;
+  ctx.clearRect(0,0,c.width,c.height);
+  let angle=-Math.PI/2;
+  const segments=[...subData.map(s=>({label:s.name,val:s.done,color:s.color})),{label:'Remaining',val:total-done,color:'rgba(255,255,255,.07)'}];
+  segments.forEach(seg=>{
+    if(!seg.val)return;
+    const sweep=(seg.val/total)*Math.PI*2;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,angle,angle+sweep);ctx.closePath();
+    ctx.fillStyle=seg.color;ctx.fill();angle+=sweep;
+  });
+  ctx.beginPath();ctx.arc(cx,cy,rIn,0,Math.PI*2);ctx.fillStyle='#0A1628';ctx.fill();
+  const pct=total?Math.round(done/total*100):0;
+  ctx.fillStyle='#C9A84C';ctx.font=`700 ${size*.23}px -apple-system,sans-serif`;ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText(pct+'%',cx,cy-size*.06);
+  ctx.fillStyle='rgba(255,255,255,.4)';ctx.font=`400 ${size*.1}px -apple-system,sans-serif`;
+  ctx.fillText(done+'/'+total+' readings',cx,cy+size*.12);
+  const legEl=document.getElementById('leg-donut');
+  if(legEl)legEl.innerHTML=subData.filter(s=>s.done>0).map(s=>`<div class="leg-item"><div class="leg-dot" style="background:${s.color}"></div>${s.name.split(' ')[0]}: ${s.pct}%</div>`).join('');
+}
+
+function drawBar(subData){
+  const c=document.getElementById('c-bar');if(!c)return;
+  const W=c.parentElement.offsetWidth*2;const H=560;
+  c.width=W;c.height=H;c.style.width=W/2+'px';c.style.height=H/2+'px';
+  const ctx=c.getContext('2d');ctx.clearRect(0,0,W,H);
+  const pad=20,barH=38,gap=12;
+  subData.forEach((s,i)=>{
+    const y=pad+i*(barH+gap);const maxW=W-pad*2-70;
+    const filledW=s.total?(s.pct/100)*maxW:0;
+    ctx.fillStyle='rgba(255,255,255,.06)';ctx.beginPath();ctx.roundRect(pad+66,y,maxW,barH,6);ctx.fill();
+    if(filledW>0){ctx.fillStyle=s.color;ctx.beginPath();ctx.roundRect(pad+66,y,filledW,barH,6);ctx.fill();}
+    ctx.fillStyle='rgba(255,255,255,.5)';ctx.font=`500 22px -apple-system,sans-serif`;ctx.textAlign='right';ctx.textBaseline='middle';
+    ctx.fillText(s.name.split(' ')[0],pad+60,y+barH/2);
+    ctx.fillStyle=s.pct>0?'rgba(255,255,255,.9)':'rgba(255,255,255,.3)';ctx.font=`700 22px -apple-system,sans-serif`;ctx.textAlign='left';
+    ctx.fillText(s.pct+'%',pad+66+maxW+10,y+barH/2);
+  });
+}
+
+// ── NAV ────────────────────────────────────────────────────────────────────────
+function showPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.bn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('page-'+id).classList.add('on');
+  btn.classList.add('on');
+  if(id==='charts')renderCharts();
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────────
+renderMotiv();renderStats();renderToday();renderSubjects();renderSchedule();
+</script>
+</body>
+</html>
